@@ -1,0 +1,27 @@
+{
+  "rules": [
+    {
+      "allowed": {
+        "origins": [
+          "https://prime-upload.com"
+        ],
+        "methods": [
+          "GET",
+          "PUT",
+          "HEAD"
+        ],
+        "headers": [
+          "Content-Type",
+          "Range"
+        ]
+      },
+      "exposeHeaders": [
+        "ETag",
+        "Accept-Ranges",
+        "Content-Range",
+        "Content-Length"
+      ],
+      "maxAgeSeconds": 3600
+    }
+  ]
+}

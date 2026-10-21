@@ -1,0 +1,4 @@
+[functions.paddle-webhook]
+verify_jwt = false
+[functions.paddle-webhook-live]
+verify_jwt = false

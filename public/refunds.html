@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+
+    <meta
+      name="description"
+      content="Sivilization's Refund Policy for digital purchases, film rentals, games, software, subscriptions, and owner-issued wallet credit."
+    />
+
+    <meta name="color-scheme" content="dark" />
+
+    <title>Refund Policy | Sivilization</title>
+
+    <style>
+      :root {
+        color-scheme: dark;
+        --background: #081221;
+        --surface: #101d30;
+        --text: #e2e8f0;
+        --muted: #b8c5d8;
+        --heading: #f8fafc;
+        --link: #93c5fd;
+        --border: #2a3a52;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        font-size: 1rem;
+        line-height: 1.75;
+      }
+
+      a {
+        color: var(--link);
+        text-underline-offset: 0.2em;
+        overflow-wrap: anywhere;
+      }
+
+      a:hover {
+        color: #bfdbfe;
+      }
+
+      a:focus-visible {
+        outline: 3px solid var(--link);
+        outline-offset: 5px;
+        border-radius: 3px;
+      }
+
+      .skip-link {
+        position: absolute;
+        top: -100px;
+        left: 16px;
+        padding: 10px 16px;
+        background: var(--heading);
+        color: var(--background);
+        z-index: 10;
+      }
+
+      .skip-link:focus {
+        top: 16px;
+      }
+
+      .site-header,
+      main,
+      .site-footer {
+        width: min(920px, 100%);
+        margin-inline: auto;
+        padding-inline: 24px;
+      }
+
+      .site-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding-block: 24px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .brand {
+        color: var(--heading);
+        font-size: 1.3rem;
+        font-weight: 750;
+        text-decoration: none;
+      }
+
+      main {
+        padding-block: 40px 64px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: var(--heading);
+        line-height: 1.3;
+      }
+
+      h1 {
+        margin: 10px 0 16px;
+        font-size: clamp(2rem, 6vw, 3rem);
+        letter-spacing: -0.035em;
+      }
+
+      h2 {
+        margin: 0 0 18px;
+        font-size: 1.5rem;
+      }
+
+      h3 {
+        margin: 26px 0 12px;
+        font-size: 1.1rem;
+      }
+
+      p {
+        margin: 0 0 16px;
+      }
+
+      li {
+        margin-bottom: 8px;
+      }
+
+      ul,
+      ol {
+        padding-left: 24px;
+        margin-block: 12px 20px;
+      }
+
+      .eyebrow {
+        color: var(--link);
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .updated {
+        color: var(--muted);
+      }
+
+      .intro,
+      .contents,
+      .contact-card,
+      .notice-box {
+        padding: 24px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+      }
+
+      .intro {
+        margin-top: 24px;
+      }
+
+      .contents {
+        margin-top: 28px;
+      }
+
+      .contents ol {
+        margin-bottom: 0;
+      }
+
+      .refund-section {
+        padding-top: 36px;
+        margin-top: 28px;
+        border-top: 1px solid var(--border);
+        scroll-margin-top: 24px;
+      }
+
+      .table-wrapper {
+        overflow-x: auto;
+        margin-block: 20px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 560px;
+      }
+
+      th,
+      td {
+        padding: 16px;
+        text-align: left;
+        vertical-align: top;
+        border-bottom: 1px solid var(--border);
+      }
+
+      th {
+        background: var(--surface);
+        color: var(--heading);
+      }
+
+      tbody tr:last-child td {
+        border-bottom: 0;
+      }
+
+      address {
+        font-style: normal;
+        overflow-wrap: anywhere;
+      }
+
+      .intro p:last-child,
+      .notice-box p:last-child {
+        margin-bottom: 0;
+      }
+
+      .site-footer {
+        padding-block: 28px 40px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        margin-bottom: 14px;
+      }
+
+      @media (max-width: 600px) {
+        .site-header,
+        main,
+        .site-footer {
+          padding-inline: 18px;
+        }
+
+        .intro,
+        .contents,
+        .contact-card,
+        .notice-box {
+          padding: 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+      }
+
+      @media print {
+        :root {
+          color-scheme: light;
+        }
+
+        body {
+          background: white;
+          color: black;
+          font-size: 11pt;
+        }
+
+        h1,
+        h2,
+        h3,
+        a,
+        .brand,
+        .eyebrow,
+        .updated {
+          color: black;
+        }
+
+        .intro,
+        .contents,
+        .contact-card,
+        .notice-box,
+        th {
+          background: white;
+          border-color: #999;
+          color: black;
+        }
+
+        .site-header,
+        .site-footer,
+        .refund-section,
+        .table-wrapper,
+        th,
+        td {
+          border-color: #999;
+        }
+
+        .contents,
+        .skip-link {
+          display: none;
+        }
+
+        .table-wrapper {
+          overflow: visible;
+        }
+
+        table {
+          min-width: 0;
+        }
+
+        h2,
+        h3 {
+          break-after: avoid;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main-content">
+      Skip to Refund Policy
+    </a>
+
+    <header class="site-header">
+      <a class="brand" href="/">Sivilization</a>
+      <a href="/">← Back to website</a>
+    </header>
+
+    <main id="main-content">
+      <header>
+        <p class="eyebrow">Purchases and customer support</p>
+
+        <h1>Refund Policy</h1>
+
+        <p class="updated">
+          Last updated:
+          <time datetime="2026-10-19">19 October 2026</time>
+        </p>
+
+        <div class="intro">
+          <p>
+            This Refund Policy explains how Sivilization
+            handles refund requests and purchase problems
+            involving films, rentals, games, software,
+            digital products, subscriptions, and purchases
+            made with owner-issued wallet credit.
+          </p>
+
+          <p>
+            We review requests fairly and consider the product,
+            the circumstances of the purchase, any applicable
+            payment-provider terms, and your legal rights.
+          </p>
+
+          <p>
+            Nothing in this policy limits rights or remedies
+            that cannot lawfully be excluded or restricted.
+          </p>
+        </div>
+      </header>
+
+      <nav class="contents" aria-labelledby="contents-heading">
+        <h2 id="contents-heading">Contents</h2>
+
+        <ol>
+          <li><a href="#operator">Who operates Sivilization</a></li>
+          <li><a href="#scope">Scope of this policy</a></li>
+          <li><a href="#request">How to request help or a refund</a></li>
+          <li><a href="#eligibility">Refund situations we review</a></li>
+          <li><a href="#films">Films and rentals</a></li>
+          <li><a href="#software">Games, software, and digital products</a></li>
+          <li><a href="#subscriptions">Subscriptions and cancellation</a></li>
+          <li><a href="#wallet">Wallet-credit purchases</a></li>
+          <li><a href="#paddle">Purchases processed through Paddle</a></li>
+          <li><a href="#processing">Refund method and processing</a></li>
+          <li><a href="#access">Access after a refund</a></li>
+          <li><a href="#rights">Mandatory consumer rights</a></li>
+          <li><a href="#changes">Changes to this policy</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ol>
+      </nav>
+
+      <section class="refund-section" id="operator">
+        <h2>1. Who operates Sivilization</h2>
+
+        <p>
+          Sivilization is operated by Khusan, an individual
+          operating under the brand name Sivilization in
+          Uzbekistan.
+        </p>
+
+        <p>
+          In this policy, “Sivilization,” “we,” “us,” and “our”
+          refer to this operator.
+        </p>
+
+        <address>
+          Website:
+          <a href="https://prime-upload.com/">
+            https://prime-upload.com/
+          </a><br />
+          Support:
+          <a href="mailto:sivilization.support@gmail.com">
+            sivilization.support@gmail.com
+          </a>
+        </address>
+      </section>
+
+      <section class="refund-section" id="scope">
+        <h2>2. Scope of this policy</h2>
+
+        <p>
+          This policy applies to digital purchases and
+          subscriptions offered through Sivilization,
+          including eligible purchases made with owner-issued
+          wallet credit.
+        </p>
+
+        <p>
+          It supplements our
+          <a href="/terms.html">Terms of Service</a>
+          and the conditions disclosed for the particular
+          product before purchase.
+        </p>
+
+        <p>
+          Purchases processed through Paddle are also subject
+          to Paddle’s applicable buyer terms and refund policy.
+          This policy does not override those terms or
+          mandatory consumer rights.
+        </p>
+
+        <p>
+          We do not currently sell physical products under
+          this policy.
+        </p>
+      </section>
+
+      <section class="refund-section" id="request">
+        <h2>3. How to request help or a refund</h2>
+
+        <p>
+          Contact us at
+          <a href="mailto:sivilization.support@gmail.com">
+            sivilization.support@gmail.com</a>.
+        </p>
+
+        <p>Please include:</p>
+
+        <ul>
+          <li>The email address associated with your account.</li>
+          <li>The name of the purchased item or subscription.</li>
+          <li>
+            Your transaction identifier or order reference,
+            if available.
+          </li>
+          <li>The purchase date and amount, if known.</li>
+          <li>
+            A description of the issue and the remedy you
+            are requesting.
+          </li>
+          <li>
+            Relevant screenshots or error messages, if useful.
+          </li>
+        </ul>
+
+        <p>
+          Do not send passwords, full payment-card numbers,
+          card security codes, or unnecessary identity documents.
+        </p>
+
+        <p>
+          Contact us as soon as reasonably possible after
+          discovering a problem. Any request window in this
+          policy does not shorten a longer period provided
+          by applicable law.
+        </p>
+
+        <p>
+          For a Paddle purchase, you may also request assistance
+          directly through
+          <a href="https://paddle.net/">Paddle order support</a>.
+        </p>
+      </section>
+
+      <section class="refund-section" id="eligibility">
+        <h2>4. Refund situations we review</h2>
+
+        <div class="table-wrapper">
+          <table>
+            <caption>
+              Examples of purchase problems and our approach
+            </caption>
+
+            <thead>
+              <tr>
+                <th scope="col">Situation</th>
+                <th scope="col">Our approach</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>Confirmed duplicate payment</td>
+                <td>
+                  We investigate and arrange an appropriate
+                  reversal or refund for a confirmed duplicate.
+                </td>
+              </tr>
+
+              <tr>
+                <td>Paid item is not delivered or accessible</td>
+                <td>
+                  We investigate the issue, attempt a prompt
+                  resolution, and provide an appropriate
+                  remedy where required or agreed.
+                </td>
+              </tr>
+
+              <tr>
+                <td>Material defect or significant misdescription</td>
+                <td>
+                  We assess the problem and provide the
+                  correction, refund, or other remedy required
+                  by applicable law or the purchase agreement.
+                </td>
+              </tr>
+
+              <tr>
+                <td>Accidental purchase that has not been used</td>
+                <td>
+                  We review requests submitted within
+                  fourteen days of purchase. Approval depends
+                  on the circumstances and applicable terms.
+                </td>
+              </tr>
+
+              <tr>
+                <td>Content already accessed, downloaded, or used</td>
+                <td>
+                  We assess the request individually.
+                  Use does not automatically remove rights
+                  relating to defects or other mandatory
+                  consumer protections.
+                </td>
+              </tr>
+
+              <tr>
+                <td>Purchase using owner-issued wallet credit</td>
+                <td>
+                  An approved reversal ordinarily restores
+                  the credit used rather than creating a
+                  cash payment.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          The fourteen-day request window for accidental,
+          unused purchases is a customer-service review
+          policy. It is not an unconditional money-back
+          guarantee and is not a statement that all customers
+          have identical statutory cancellation rights.
+        </p>
+
+        <p>
+          Decisions may take account of the product description,
+          access or usage records, the reported issue, and
+          applicable payment-provider requirements.
+        </p>
+
+        <p>
+          We may request reasonable information needed to
+          verify a purchase or investigate a problem. We will
+          not use that process to obstruct rights provided
+          by applicable law.
+        </p>
+      </section>
+
+      <section class="refund-section" id="films">
+        <h2>5. Films and rentals</h2>
+
+        <h3>5.1 Film purchases</h3>
+
+        <p>
+          If a purchased film cannot be accessed, fails to
+          play because of a service-side problem, or differs
+          materially from its description, contact support.
+        </p>
+
+        <p>
+          We may first investigate and attempt to restore
+          access or correct the problem, without limiting
+          remedies available under applicable law.
+        </p>
+
+        <p>
+          Requests based solely on a change of mind after
+          viewing are assessed individually and are not
+          automatically approved under our voluntary policy.
+        </p>
+
+        <h3>5.2 Film rentals</h3>
+
+        <p>
+          Rentals provide access for the period disclosed
+          before purchase. Owner-issued wallet rentals
+          currently provide seven days of access from the
+          successful rental transaction.
+        </p>
+
+        <p>
+          The ordinary expiry of a correctly supplied rental
+          does not by itself establish a refund entitlement.
+        </p>
+
+        <p>
+          If a technical problem prevents viewing during
+          the rental period, report it promptly. Depending
+          on the circumstances, an appropriate remedy may
+          include restored access, an extension, replacement
+          access, or a refund.
+        </p>
+
+        <p>
+          Starting a stream does not automatically remove
+          every refund or withdrawal right. Any applicable
+          exception depends on the law and any required
+          disclosures, consent, and acknowledgement.
+        </p>
+      </section>
+
+      <section class="refund-section" id="software">
+        <h2>6. Games, software, and digital products</h2>
+
+        <p>
+          Review the product description, delivery method,
+          platform, version, and stated system requirements
+          before purchasing.
+        </p>
+
+        <p>
+          If a product is not delivered, has a material
+          defect, or does not meet the description provided
+          before purchase, contact support.
+        </p>
+
+        <p>
+          We may request information about your device,
+          software version, and error messages to diagnose
+          the issue.
+        </p>
+
+        <p>
+          A compatibility issue involving clearly disclosed
+          requirements may be assessed differently from a
+          defect or inaccurate listing. We will consider
+          the specific circumstances and applicable law.
+        </p>
+
+        <p>
+          Downloading or installing a product does not
+          automatically remove rights relating to defects,
+          misdescription, or other mandatory protections.
+        </p>
+      </section>
+
+      <section class="refund-section" id="subscriptions">
+        <h2>7. Subscriptions and cancellation</h2>
+
+        <p>
+          Cancelling a subscription and requesting a refund
+          are separate actions.
+        </p>
+
+        <h3>7.1 Cancelling renewal</h3>
+
+        <p>
+          For subscriptions processed through Paddle, use the
+          subscription-management link supplied with your
+          purchase or contact
+          <a href="https://paddle.net/">Paddle order support</a>.
+          You may also contact Sivilization for assistance.
+        </p>
+
+        <p>
+          Unless different conditions were disclosed or
+          applicable law requires otherwise, cancellation
+          stops future renewal and takes effect at the end
+          of the current paid billing period.
+        </p>
+
+        <p>
+          Deleting an application, ceasing to use the service,
+          or requesting account deletion should not be relied
+          upon as a substitute for cancelling recurring billing.
+          Ask support for help if you are unsure whether a
+          cancellation has completed.
+        </p>
+
+        <h3>7.2 Subscription refund requests</h3>
+
+        <p>
+          We review subscription refund requests according
+          to the circumstances, including accidental
+          purchases, access failures, material defects,
+          duplicate charges, and applicable legal rights.
+        </p>
+
+        <p>
+          We do not promise automatic prorated refunds for
+          unused time after a valid cancellation unless
+          required by law or expressly offered.
+        </p>
+
+        <p>
+          If you believe a charge occurred after an effective
+          cancellation, provide the charge details and any
+          cancellation confirmation so the issue can be
+          investigated.
+        </p>
+      </section>
+
+      <section class="refund-section" id="wallet">
+        <h2>8. Wallet-credit purchases</h2>
+
+        <p>
+          Sivilization wallet credit is issued by the owner.
+          Customers cannot buy or top up that credit with
+          real money.
+        </p>
+
+        <p>
+          If we approve reversal of a purchase paid entirely
+          with owner-issued wallet credit, we ordinarily
+          restore the credit deducted for that purchase.
+        </p>
+
+        <p>
+          Such a reversal does not create an entitlement to
+          receive cash for credit that was not purchased
+          with money, subject to applicable law.
+        </p>
+
+        <p>
+          If you believe a wallet transaction deducted the
+          wrong amount, was duplicated, or failed while
+          still reducing your balance, contact support.
+          We will investigate the transaction records and
+          correct confirmed errors.
+        </p>
+
+        <p>
+          A credit restoration may be accompanied by removal
+          of the entitlement created by the reversed purchase.
+        </p>
+      </section>
+
+      <section class="refund-section" id="paddle">
+        <h2>9. Purchases processed through Paddle</h2>
+
+        <p>
+          Where your purchase is processed through Paddle,
+          Paddle acts as the merchant of record.
+        </p>
+
+        <p>
+          Its applicable buyer terms, refund policy,
+          transaction rules, and refund decisions apply
+          to those purchases.
+        </p>
+
+        <p>
+          You can obtain assistance using your Paddle receipt,
+          order reference, or
+          <a href="https://paddle.net/">paddle.net</a>.
+        </p>
+
+        <ul>
+          <li>
+            <a href="https://www.paddle.com/legal/refund-policy">
+              Paddle Refund Policy
+            </a>
+          </li>
+          <li>
+            <a href="https://www.paddle.com/legal/buyer-terms">
+              Paddle Buyer Terms
+            </a>
+          </li>
+        </ul>
+
+        <p>
+          We may assist by providing fulfilment information,
+          investigating access problems, or coordinating
+          the request. We cannot guarantee approval of a
+          refund controlled by Paddle.
+        </p>
+
+        <p>
+          Nothing in this policy substitutes Sivilization
+          wallet credit for a monetary refund where the
+          applicable transaction terms or law require a
+          monetary refund.
+        </p>
+      </section>
+
+      <section class="refund-section" id="processing">
+        <h2>10. Refund method and processing</h2>
+
+        <p>
+          Approved monetary refunds are processed through
+          the relevant payment provider, ordinarily to the
+          original payment method where supported and
+          required by the transaction rules.
+        </p>
+
+        <p>
+          Processing and bank posting times depend on the
+          payment provider, payment method, and financial
+          institution. We do not guarantee a fixed bank
+          posting time.
+        </p>
+
+        <p>
+          Approved wallet-purchase reversals are ordinarily
+          handled by restoring the relevant wallet credit.
+        </p>
+
+        <p>
+          We will explain any proposed alternative remedy,
+          such as replacement access or an access extension.
+          We will not require you to accept an alternative
+          in place of a refund where you are legally
+          entitled to a refund.
+        </p>
+
+        <p>
+          Contact support if an approved remedy has not been
+          completed or if you need an update.
+        </p>
+      </section>
+
+      <section class="refund-section" id="access">
+        <h2>11. Access after a refund</h2>
+
+        <p>
+          If a purchase is fully refunded or reversed, access
+          granted solely by that purchase may be removed.
+        </p>
+
+        <p>
+          We will not intentionally remove unrelated
+          purchases or other valid access entitlements
+          merely because one transaction is refunded.
+        </p>
+
+        <p>
+          Where a software licence or download is refunded,
+          you must comply with any applicable requirement
+          to stop using the refunded product and remove
+          unauthorised copies.
+        </p>
+
+        <p>
+          Partial refunds or other remedies may have different
+          effects, which should be explained when the remedy
+          is agreed.
+        </p>
+      </section>
+
+      <section class="refund-section" id="rights">
+        <h2>12. Mandatory consumer rights</h2>
+
+        <div class="notice-box">
+          <p>
+            Nothing in this policy excludes, restricts, or
+            replaces rights that cannot lawfully be waived,
+            including rights concerning defective,
+            misdescribed, or undelivered digital content
+            or services.
+          </p>
+        </div>
+
+        <p>
+          Your rights may depend on your country, the product,
+          the transaction, and whether required information
+          and consent were provided.
+        </p>
+
+        <p>
+          Any statutory withdrawal exception for immediately
+          supplied digital content applies only where its
+          legal conditions have been met.
+        </p>
+
+        <p>
+          Contacting support does not prevent you from using
+          a complaint, payment-dispute, regulatory, or legal
+          process available to you, and does not extend any
+          deadline that applies to those processes.
+        </p>
+      </section>
+
+      <section class="refund-section" id="changes">
+        <h2>13. Changes to this policy</h2>
+
+        <p>
+          We may update this policy when our products,
+          procedures, payment arrangements, or legal
+          obligations change.
+        </p>
+
+        <p>
+          We will publish the revised policy with an updated
+          date and provide additional notice where required.
+        </p>
+
+        <p>
+          Changes will not retroactively remove rights
+          associated with completed purchases where doing
+          so would be unlawful.
+        </p>
+      </section>
+
+      <section class="refund-section" id="contact">
+        <h2>14. Contact</h2>
+
+        <p>
+          For purchase problems, refund requests, or questions
+          about this policy:
+        </p>
+
+        <address class="contact-card">
+          Sivilization<br />
+          Operator: Khusan, an individual operating as
+          Sivilization<br />
+          Country: Uzbekistan<br />
+          Website:
+          <a href="https://prime-upload.com/">
+            https://prime-upload.com/
+          </a><br />
+          Email:
+          <a href="mailto:sivilization.support@gmail.com">
+            sivilization.support@gmail.com
+          </a>
+        </address>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="/">Home</a>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="#main-content">Back to top</a>
+        <a href="mailto:sivilization.support@gmail.com">
+          Contact support
+        </a>
+      </nav>
+
+      <p>Sivilization · Refund Policy</p>
+    </footer>
+  </body>
+</html>
