@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import AdminDashboard from "./AdminDashboard";
-import FilmStudioPage from "./FilmStudioPage";
 import GameStudioPage from "./GameStudioPage";
 import ProductStudioPage from "./ProductStudioPage";
 import SubscriptionStudioPage from "./SubscriptionStudioPage";
@@ -11,10 +10,6 @@ export default function AdminContentPage({ onBack }) {
 
   function goToDashboard() {
     setActiveStudio("dashboard");
-  }
-
-  if (activeStudio === "films") {
-    return <FilmStudioPage onBack={goToDashboard} />;
   }
 
   if (activeStudio === "games") {
@@ -31,7 +26,6 @@ export default function AdminContentPage({ onBack }) {
 
   return (
     <AdminDashboard
-      onOpenFilmStudio={() => setActiveStudio("films")}
       onOpenGameStudio={() => setActiveStudio("games")}
       onOpenProductStudio={() => setActiveStudio("products")}
       onOpenSubscriptionStudio={() => setActiveStudio("subscriptions")}
