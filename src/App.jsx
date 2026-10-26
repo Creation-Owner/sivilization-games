@@ -3,6 +3,7 @@ import { supabase } from "./supabaseClient";
 import "./App.css";
 
 import PublicSite from "./components/PublicSite";
+import GameLandingPage from "./components/GameLandingPage";
 import HomeSection from "./components/HomeSection";
 import GamesSection from "./components/GamesSection";
 import LibrarySection from "./components/LibrarySection";
@@ -725,13 +726,10 @@ export default function App() {
   }
 
   return (
-    <PublicSite
+    <GameLandingPage
       onLogin={() => setShowLogin(true)}
       businessName="Sivilization"
       supportEmail="sivilization.support@gmail.com"
-      termsUrl="/terms.html"
-      privacyUrl="/privacy.html"
-      refundsUrl="/refunds.html"
     />
   );
 }

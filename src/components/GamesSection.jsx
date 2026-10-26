@@ -54,13 +54,19 @@ function isPaidGame(game) {
   return game.access_type === "paid" || game.is_paid === true;
 }
 
-export default function GamesSection() {
+export default function GamesSection({ search: initialSearch = "" }) {
   const [games, setGames] = useState([]);
   const [category, setCategory] = useState("All games");
   const [platform, setPlatform] = useState("All platforms");
   const [accessType, setAccessType] = useState("All access");
   const [sort, setSort] = useState("newest");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch);
+
+  useEffect(() => {
+    if (initialSearch !== undefined) {
+      setSearch(initialSearch);
+    }
+  }, [initialSearch]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [busyId, setBusyId] = useState(null);
@@ -147,19 +153,8 @@ export default function GamesSection() {
         (accessType === "Free" && !paid) ||
         (accessType === "Paid" && paid);
 
-      const searchableText = [
-        game.title,
-        game.description,
-        game.genre,
-        game.platform,
-        game.version,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
       const matchesSearch =
-        !term || searchableText.includes(term);
+        !term || (game.title || "").toLowerCase().includes(term);
 
       return (
         matchesCategory &&
@@ -386,6 +381,10 @@ export default function GamesSection() {
             <button
               type="button"
               className="public-button"
+              style={{
+                backgroundColor: "#47cc27",
+                color: "#f8fcf9",
+              }}
               disabled={Boolean(busyId)}
               onClick={() => handleDownload(game)}
             >
@@ -457,14 +456,41 @@ export default function GamesSection() {
 
       <div className="games-filter-panel">
         <label className="games-filter-field">
-          <span>Search</span>
+          <span>Search by title</span>
 
-          <input
-            type="search"
-            value={search}
-            placeholder="Search by title, genre, or description"
-            onChange={(event) => setSearch(event.target.value)}
-          />
+          <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+            <input
+              id="games-section-title-search"
+              type="search"
+              value={search}
+              placeholder="Filter games by title..."
+              onChange={(event) => setSearch(event.target.value)}
+              aria-label="Filter games by title"
+              style={{ paddingRight: "30px", width: "100%" }}
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                aria-label="Clear title search"
+                title="Clear search"
+                style={{
+                  position: "absolute",
+                  right: "8px",
+                  background: "transparent",
+                  border: "none",
+                  color: "#94a3b8",
+                  cursor: "pointer",
+                  fontSize: "1rem",
+                  padding: "0 4px",
+                  display: "grid",
+                  placeItems: "center",
+                }}
+              >
+                ×
+              </button>
+            )}
+          </div>
         </label>
 
         <label className="games-filter-field">
