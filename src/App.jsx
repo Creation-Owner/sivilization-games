@@ -346,10 +346,11 @@ function AppShell({ user }) {
   }
 
   function navigate(section) {
-    setActiveSection(section);
+    const targetSection = section === "Media" ? "Games" : section;
+    setActiveSection(targetSection);
     setProfileOpen(false);
 
-    if (!["Games", "Library"].includes(section)) {
+    if (!["Games", "Shop", "Library"].includes(targetSection)) {
       setSearch("");
     }
 
@@ -363,7 +364,7 @@ function AppShell({ user }) {
       ? "Loading wallet…"
       : `Wallet: ${formatCurrency(walletBalance)}`;
 
-  const showSearch = ["Games", "Library"].includes(activeSection);
+  const showSearch = ["Games", "Shop", "Library"].includes(activeSection);
 
   return (
     <main className="site-page">
@@ -552,6 +553,19 @@ function AppShell({ user }) {
         <GamesSection search={search} />
       )}
 
+      {activeSection === "Shop" && (
+        <ShopSection
+          search={search}
+          onOpenCart={() => navigate("Cart")}
+        />
+      )}
+
+      {activeSection === "Cart" && <CartSection />}
+
+      {activeSection === "Subscriptions" && (
+        <SubscriptionsSection />
+      )}
+
       {activeSection === "Library" && (
         <LibrarySection search={search} />
       )}
@@ -564,6 +578,7 @@ function AppShell({ user }) {
           isAdmin={isAdmin}
           isOwner={isOwner}
           onOpenWallet={() => navigate("Wallet")}
+          onOpenSubscriptions={() => navigate("Subscriptions")}
           handleLogout={handleLogout}
         />
       )}
@@ -576,6 +591,7 @@ function AppShell({ user }) {
           handleLogout={handleLogout}
           onOpenSettings={() => navigate("Settings")}
           onOpenWallet={() => navigate("Wallet")}
+          onOpenSubscriptions={() => navigate("Subscriptions")}
         />
       )}
 

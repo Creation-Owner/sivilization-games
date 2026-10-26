@@ -1,6 +1,27 @@
 import { supabase } from "./supabaseClient";
 
 async function invokeUploader(body) {
+  try {
+    const response = await fetch("/api/r2/multipart", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...body, category: "games" }),
+    });
+
+    if (response.ok) {
+      return await response.json();
+    }
+
+    const errData = await response.json().catch(() => null);
+    if (errData?.error) {
+      throw new Error(errData.error);
+    }
+  } catch (err) {
+    if (err instanceof Error && !err.message.includes("Failed to fetch")) {
+      throw err;
+    }
+  }
+
   const { data, error } = await supabase.functions.invoke(
     "r2-game-upload",
     { body },
@@ -70,6 +91,7 @@ export async function uploadGameToR2(file, onProgress) {
     action: "start",
     file_name: file.name,
     size: file.size,
+    content_type: file.type || "application/octet-stream",
   });
 
   if (

@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { Upload } from "tus-js-client";
 import { supabase } from "../supabaseClient";
 import { uploadFilmToR2 } from "../r2FilmUpload";
+import { uploadAssetToR2, deleteFromR2 } from "../lib/r2Storage";
 
-const BUCKET = "films-free";
-const TUS_CHUNK_SIZE = 6 * 1024 * 1024;
 const MAX_POSTER_SIZE = 10 * 1024 * 1024;
 
 const VIDEO_TYPES = new Set([
@@ -36,16 +34,6 @@ const GENRES = [
   "Thriller",
 ];
 
-function safeFileName(fileName) {
-  const cleaned = fileName
-    .normalize("NFKD")
-    .replace(/[^a-zA-Z0-9.-]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-
-  return cleaned || "upload";
-}
-
 function formatFileSize(bytes) {
   if (!bytes) {
     return "0 KB";
@@ -56,87 +44,6 @@ function formatFileSize(bytes) {
   return megabytes >= 1
     ? `${megabytes.toFixed(1)} MB`
     : `${Math.ceil(bytes / 1024)} KB`;
-}
-
-function getTusConfig() {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-
-  const apiKey =
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-    import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !apiKey) {
-    throw new Error(
-      "Supabase URL or public API key is not configured.",
-    );
-  }
-
-  const url = new URL(supabaseUrl);
-  const projectRef = url.hostname.split(".")[0];
-
-  const endpoint = url.hostname.endsWith(".supabase.co")
-    ? `https://${projectRef}.storage.supabase.co/storage/v1/upload/resumable`
-    : `${supabaseUrl}/storage/v1/upload/resumable`;
-
-  return { endpoint, apiKey };
-}
-
-async function uploadResumable(file, path, onProgress) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError) {
-    throw sessionError;
-  }
-
-  if (!session?.access_token) {
-    throw new Error("Your session expired. Sign in again.");
-  }
-
-  const { endpoint, apiKey } = getTusConfig();
-
-  return new Promise((resolve, reject) => {
-    const upload = new Upload(file, {
-      endpoint,
-      chunkSize: TUS_CHUNK_SIZE,
-      retryDelays: [0, 3000, 5000, 10000, 20000],
-      removeFingerprintOnSuccess: true,
-      headers: {
-        apikey: apiKey,
-        authorization: `Bearer ${session.access_token}`,
-        "x-upsert": "false",
-      },
-      metadata: {
-        bucketName: BUCKET,
-        objectName: path,
-        contentType: file.type || "application/octet-stream",
-        cacheControl: "3600",
-      },
-      onProgress(bytesUploaded, bytesTotal) {
-        const percent =
-          bytesTotal > 0
-            ? Math.round((bytesUploaded / bytesTotal) * 100)
-            : 0;
-
-        onProgress?.(percent);
-      },
-      onError: reject,
-      onSuccess: resolve,
-    });
-
-    upload
-      .findPreviousUploads()
-      .then((previousUploads) => {
-        if (previousUploads.length > 0) {
-          upload.resumeFromPreviousUpload(previousUploads[0]);
-        }
-
-        upload.start();
-      })
-      .catch(reject);
-  });
 }
 
 export default function AdminFilmUpload({ onUploaded }) {
@@ -333,31 +240,24 @@ export default function AdminFilmUpload({ onUploaded }) {
         throw new Error("Only administrators can upload films.");
       }
 
-      const uploadId = crypto.randomUUID();
-
-      videoPath = `videos/${uploadId}-${safeFileName(
-        videoFile.name,
-      )}`;
-
-      showMessage("Uploading video… 0%");
-
-      showMessage("Uploading video to R2… 0%");
+      showMessage("Uploading video to Cloudflare R2… 0%");
 
       r2Video = await uploadFilmToR2(videoFile, (percent) => {
         setProgress(percent);
-        showMessage(`Uploading video to R2… ${percent}%`);
+        showMessage(`Uploading video to Cloudflare R2… ${percent}%`);
       });
 
       videoPath = r2Video.video_path;
 
+      let posterUrl = null;
       if (posterFile) {
-        posterPath = `posters/${uploadId}-${safeFileName(
-          posterFile.name,
-        )}`;
-
-        showMessage("Uploading poster…");
-
-        await uploadResumable(posterFile, posterPath);
+        showMessage("Uploading poster to Cloudflare R2…");
+        const uploadedPoster = await uploadAssetToR2(posterFile, {
+          folder: "posters",
+          bucket: "films",
+        });
+        posterPath = uploadedPoster.path;
+        posterUrl = uploadedPoster.publicUrl;
       }
 
       showMessage("Saving film as an unpublished draft…");
@@ -375,10 +275,11 @@ export default function AdminFilmUpload({ onUploaded }) {
           release_year: Number(releaseYear) || null,
           duration: duration.trim() || null,
           rating: 0,
-          video_path: r2Video.video_path,
+          video_path: videoPath,
           video_bucket: r2Video.video_bucket,
           video_storage_provider: r2Video.video_storage_provider,
           poster_path: posterPath,
+          poster_url: posterUrl,
           created_by: user.id,
 
           access_type: accessType,
@@ -422,10 +323,10 @@ export default function AdminFilmUpload({ onUploaded }) {
       setVideoFile(null);
       setPosterFile(null);
 
-      eform.reset();
+      form.reset();
 
       showMessage(
-        "Film uploaded and saved as an unpublished draft.",
+        "Film uploaded to Cloudflare R2 and saved as an unpublished draft.",
         "success",
       );
 
@@ -437,16 +338,15 @@ export default function AdminFilmUpload({ onUploaded }) {
         const paths = [posterPath].filter(Boolean);
 
         if (paths.length > 0) {
-          const { error: cleanupError } = await supabase.storage
-            .from(BUCKET)
-            .remove(paths);
-
-          if (cleanupError) {
+          await deleteFromR2({
+            bucket: "films",
+            paths,
+          }).catch((cleanupError) => {
             console.error(
-              "Could not remove incomplete upload:",
+              "Could not remove incomplete R2 upload:",
               cleanupError,
             );
-          }
+          });
         }
       }
 

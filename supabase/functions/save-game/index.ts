@@ -220,6 +220,10 @@ Deno.serve(async (request) => {
       }
     }
 
+    const gameStorageProvider =
+      textOrNull(body.game_storage_provider) ?? "r2";
+    const gameBucket = textOrNull(body.game_bucket) ?? "games";
+
     const gamePayload = {
       title,
       description,
@@ -232,6 +236,8 @@ Deno.serve(async (request) => {
       paddle_price_id: accessType === "paid" ? paddlePriceId : null,
       delivery_type: deliveryType,
       game_path: deliveryType === "upload" ? gamePath : null,
+      game_storage_provider: deliveryType === "upload" ? gameStorageProvider : "r2",
+      game_bucket: deliveryType === "upload" ? gameBucket : null,
       cover_path: coverPath,
       external_url: deliveryType === "url" ? externalUrl : null,
       is_published: isPublished,

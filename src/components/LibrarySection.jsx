@@ -1,31 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../supabaseClient";
+import { getR2ObjectUrl, getR2DownloadUrl } from "../lib/r2Storage";
 
 
 function getProductImageUrl(product) {
   if (product.image_url) return product.image_url;
   if (!product.image_path) return "";
-
-
-  const { data } = supabase.storage
-    .from("product-images")
-    .getPublicUrl(product.image_path);
-
-
-  return data?.publicUrl || "";
+  return getR2ObjectUrl("assets", product.image_path);
 }
 
 
 function getGameCoverUrl(game) {
   if (!game.cover_path) return "";
-
-
-  const { data } = supabase.storage
-    .from("games")
-    .getPublicUrl(game.cover_path);
-
-
-  return data?.publicUrl || "";
+  return getR2ObjectUrl(game.game_bucket || "games", game.cover_path);
 }
 
 
@@ -242,6 +229,16 @@ export default function LibrarySection({ search = "" }) {
         return;
       }
 
+
+      if (game.game_path) {
+        const signed = await getR2DownloadUrl({
+          bucket: game.game_bucket || "games",
+          path: game.game_path,
+        });
+        setNotice("Your Cloudflare R2 download is starting.");
+        window.location.assign(signed.url);
+        return;
+      }
 
       const { data, error } = await supabase.functions.invoke(
         "get-game-download",

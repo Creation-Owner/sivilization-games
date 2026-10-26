@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: sivilization-shop
+    runtime: node
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: NODE_ENV=production npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
+      - key: VITE_PADDLE_CLIENT_TOKEN
+        sync: false
+      - key: VITE_PADDLE_ENVIRONMENT
+        value: sandbox
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET_NAME
+        value: sivilization-storage
+      - key: R2_PUBLIC_URL
+        sync: false
+      - key: VITE_R2_PUBLIC_URL
+        sync: false

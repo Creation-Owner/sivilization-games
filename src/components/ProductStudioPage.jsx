@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../supabaseClient";
+import { uploadAssetToR2 } from "../lib/r2Storage";
 
 const FUNCTION_URL =
   "https://lpwzqifopxyzkdjtskiv.supabase.co/functions/v1/create-paddle-product";
@@ -16,6 +17,7 @@ export default function ProductStudioPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    const formElement = event.currentTarget;
 
     setLoading(true);
     setError("");
@@ -53,65 +55,81 @@ export default function ProductStudioPage() {
           throw new Error("Please choose a valid image file.");
         }
 
-        const extension = imageFile.name.split(".").pop() || "jpg";
-        const filePath = `products/${crypto.randomUUID()}.${extension}`;
+        const uploadedImage = await uploadAssetToR2(imageFile, {
+          folder: "products",
+          bucket: "assets",
+        });
 
-        const { error: uploadError } = await supabase.storage
-          .from("product-images")
-          .upload(filePath, imageFile, {
-            cacheControl: "3600",
-            upsert: false,
-            contentType: imageFile.type,
-          });
+        imagePath = uploadedImage.path;
+        imageUrl = uploadedImage.publicUrl;
+      }
 
-        if (uploadError) {
-          throw uploadError;
+      let createdTitle = title.trim();
+
+      if (
+        import.meta.env.VITE_SUPABASE_URL &&
+        session.access_token !== "mock-access-token"
+      ) {
+        const response = await fetch(FUNCTION_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            title: title.trim(),
+            description: description.trim(),
+            category: category.trim(),
+            imageUrl,
+            imagePath,
+            priceCents,
+          }),
+        });
+
+        const responseText = await response.text();
+        let result = {};
+        try {
+          result = JSON.parse(responseText);
+        } catch {
+          result = { error: responseText };
         }
 
-        const { data: publicUrlData } = supabase.storage
-          .from("product-images")
-          .getPublicUrl(filePath);
+        if (!response.ok) {
+          throw new Error(
+            result.error ||
+              responseText ||
+              "Could not create the product."
+          );
+        }
 
-        imagePath = filePath;
-        imageUrl = publicUrlData?.publicUrl || "";
-      }
+        createdTitle = result.product?.title || createdTitle;
+      } else {
+        const { data: inserted, error: insertError } = await supabase
+          .from("products")
+          .insert({
+            title: title.trim(),
+            name: title.trim(),
+            description: description.trim(),
+            category: category.trim() || "Digital",
+            price: Number(price),
+            price_cents: priceCents,
+            image_url: imageUrl,
+            image_path: imagePath,
+            storage_provider: "r2",
+            is_published: true,
+            paddle_price_id: `pri_r2_${crypto.randomUUID().slice(0, 8)}`,
+          })
+          .select()
+          .single();
 
-      const response = await fetch(FUNCTION_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          title: title.trim(),
-          description: description.trim(),
-          category: category.trim(),
-          imageUrl,
-          imagePath,
-          priceCents,
-        }),
-      });
-
-      const responseText = await response.text();
-
-      let result = {};
-
-      try {
-        result = JSON.parse(responseText);
-      } catch {
-        result = { error: responseText };
-      }
-
-      if (!response.ok) {
-        throw new Error(
-          result.error ||
-            responseText ||
-            "Could not create the product."
-        );
+        if (insertError) {
+          throw insertError;
+        }
+        createdTitle = inserted?.title || createdTitle;
       }
 
       setMessage(
-        `${result.product?.title || title} was created and is ready to sell.`
+        `${createdTitle} was created in Cloudflare R2 and is ready to sell.`
       );
 
       setTitle("");
@@ -119,7 +137,7 @@ export default function ProductStudioPage() {
       setCategory("");
       setPrice("");
       setImageFile(null);
-      event.currentTarget.reset();
+      formElement.reset();
     } catch (actionError) {
       setError(actionError?.message || "Could not create the product.");
     } finally {

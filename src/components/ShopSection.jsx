@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../supabaseClient";
 import { buyItem } from "../paddle";
+import { getR2ObjectUrl } from "../lib/r2Storage";
 
 function getProductImageUrl(product) {
   if (product.image_url) {
@@ -11,11 +12,7 @@ function getProductImageUrl(product) {
     return "";
   }
 
-  const { data } = supabase.storage
-    .from("product-images")
-    .getPublicUrl(product.image_path);
-
-  return data?.publicUrl || "";
+  return getR2ObjectUrl("assets", product.image_path);
 }
 
 function formatPrice(cents) {
@@ -39,14 +36,6 @@ export default function ShopSection({
   const [message, setMessage] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [buyingWithWallet, setBuyingWithWallet] = useState(null);
-
-  useEffect(() => {
-    try {
-      initializePaddle();
-    } catch (paddleError) {
-      console.error("Paddle could not initialize:", paddleError);
-    }
-  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -338,7 +327,7 @@ export default function ShopSection({
     setMessage("");
 
     try {
-      const user = await getCurrentUser();
+      await getCurrentUser();
 
       const { data, error } = await supabase.rpc(
         "purchase_with_wallet",

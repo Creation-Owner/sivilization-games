@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "../supabaseClient";
 import { uploadGameToR2 } from "../r2GameUpload";
+import {
+  uploadAssetToR2,
+  getR2ObjectUrl,
+  getR2DownloadUrl,
+  deleteFromR2,
+} from "../lib/r2Storage";
 import { buySandboxGame } from "../sandboxGameCheckout";
 
 const EMPTY_FORM = {
@@ -17,8 +23,8 @@ const EMPTY_FORM = {
   isPublished: false,
   gamePath: null,
   coverPath: null,
-  gameStorageProvider: "supabase",
-  gameBucket: null,
+  gameStorageProvider: "r2",
+  gameBucket: "games",
 };
 
 const GENRES = [
@@ -51,22 +57,9 @@ function formatCurrency(cents) {
   }).format((Number(cents) || 0) / 100);
 }
 
-function safeFileName(name) {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9.]+/g, "-")
-    .slice(-150);
-}
-
-function getCoverUrl(path) {
+function getCoverUrl(path, bucket = "games") {
   if (!path) return null;
-
-  return (
-    supabase.storage
-      .from("games")
-      .getPublicUrl(path)
-      .data?.publicUrl || null
-  );
+  return getR2ObjectUrl(bucket || "games", path);
 }
 
 async function saveGameOnServer(payload) {
@@ -408,32 +401,23 @@ export default function GameStudioPage({ onBack }) {
       await requireAdmin();
 
       let gamePath = form.gamePath;
-      let gameBucket = form.gameBucket;
-      let provider =
-        form.gameStorageProvider || "supabase";
+      let gameBucket = form.gameBucket || "games";
+      let provider = form.gameStorageProvider || "r2";
       let coverPath = form.coverPath;
 
       if (coverFile) {
         if (pendingCover.current?.file !== coverFile) {
-          const uploadedPath =
-            `covers/${crypto.randomUUID()}-` +
-            safeFileName(coverFile.name);
+          showMessage("Uploading cover image to Cloudflare R2...");
 
-          showMessage("Uploading cover to Supabase...");
-
-          const { error } = await supabase.storage
-            .from("games")
-            .upload(uploadedPath, coverFile, {
-              upsert: false,
-              contentType: coverFile.type,
-              cacheControl: "3600",
-            });
-
-          if (error) throw error;
+          const uploadedCover = await uploadAssetToR2(coverFile, {
+            folder: "covers",
+            bucket: "games",
+          });
 
           pendingCover.current = {
             file: coverFile,
-            path: uploadedPath,
+            path: uploadedCover.path,
+            bucket: uploadedCover.bucket,
           };
         }
 
@@ -498,7 +482,7 @@ export default function GameStudioPage({ onBack }) {
           : null,
         game_path: isExternalUrl ? null : gamePath,
         game_storage_provider: isExternalUrl
-          ? "supabase"
+          ? "r2"
           : provider,
         game_bucket: isExternalUrl
           ? null
@@ -526,7 +510,7 @@ export default function GameStudioPage({ onBack }) {
             : " as a draft"
         }.` +
           (savedGame.game_storage_provider === "r2"
-            ? " Package stored in Cloudflare R2."
+            ? " Stored in Cloudflare R2."
             : "") +
           (savedGame.access_type === "paid"
             ? " Paid customer downloads remain disabled pending purchase verification."
@@ -604,16 +588,9 @@ export default function GameStudioPage({ onBack }) {
   async function deleteGame(game) {
     if (operationLock.current) return;
 
-    if (game.game_storage_provider === "r2") {
-      return showMessage(
-        "R2 deletion is not connected. Unpublish instead; the package and record will be kept.",
-        "error",
-      );
-    }
-
     if (
       !window.confirm(
-        `Delete "${game.title}" and its Supabase files? This cannot be undone.`,
+        `Delete "${game.title}" and its Cloudflare R2 files? This cannot be undone.`,
       )
     ) {
       return;
@@ -633,19 +610,18 @@ export default function GameStudioPage({ onBack }) {
       if (error) throw error;
 
       let cleanupFailed = false;
+      const pathsToRemove = [
+        game.game_path,
+        game.cover_path,
+      ].filter(Boolean);
 
-      for (
-        const path of [
-          game.game_path,
-          game.cover_path,
-        ].filter(Boolean)
-      ) {
-        const { error: removeError } =
-          await supabase.storage
-            .from("games")
-            .remove([path]);
-
-        if (removeError) {
+      if (pathsToRemove.length > 0) {
+        try {
+          await deleteFromR2({
+            bucket: game.game_bucket || "games",
+            paths: pathsToRemove,
+          });
+        } catch {
           cleanupFailed = true;
         }
       }
@@ -660,8 +636,8 @@ export default function GameStudioPage({ onBack }) {
 
       showMessage(
         cleanupFailed
-          ? "Record deleted; some Supabase files remain. Check storage."
-          : "Game deleted.",
+          ? "Record deleted; some R2 files could not be removed."
+          : "Game and Cloudflare R2 files deleted.",
         cleanupFailed ? "error" : "success",
       );
     } catch (error) {
@@ -679,34 +655,12 @@ export default function GameStudioPage({ onBack }) {
     setBusyId(game.id);
 
     try {
-      const { data, error } =
-        await supabase.functions.invoke(
-          "get-game-download",
-          {
-            body: {
-              game_id: game.id,
-            },
-          },
-        );
+      const signed = await getR2DownloadUrl({
+        bucket: game.game_bucket || "games",
+        path: game.game_path,
+      });
 
-      if (error) {
-        const detail =
-          typeof error.context?.json === "function"
-            ? await error.context.json().catch(() => null)
-            : null;
-
-        throw new Error(
-          detail?.error || error.message,
-        );
-      }
-
-      if (!data?.url || data.error) {
-        throw new Error(
-          data?.error || "No download URL returned.",
-        );
-      }
-
-      window.location.assign(data.url);
+      window.location.assign(signed.url);
     } catch (error) {
       showMessage(error.message, "error");
     } finally {
@@ -748,8 +702,8 @@ export default function GameStudioPage({ onBack }) {
           <h1>Game Studio</h1>
 
           <p>
-            New ZIP/APK packages upload to private Cloudflare R2.
-            Covers stay in Supabase.
+            ZIP/APK game packages and cover images upload directly to
+            Cloudflare R2 storage.
           </p>
 
           <p>
@@ -1211,12 +1165,10 @@ export default function GameStudioPage({ onBack }) {
 
                       <button
                         type="button"
-                        disabled={disabled || isR2}
+                        disabled={disabled}
                         onClick={() => deleteGame(game)}
                       >
-                        {isR2
-                          ? "R2 deletion pending"
-                          : "Delete"}
+                        Delete
                       </button>
                     </div>
                   </div>

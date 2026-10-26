@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../supabaseClient";
+import { getR2ObjectUrl, getR2DownloadUrl } from "../lib/r2Storage";
 
 const CATEGORIES = [
   "All games",
@@ -44,15 +45,9 @@ function formatPrice(cents) {
   }).format((Number(cents) || 0) / 100);
 }
 
-function getCoverUrl(path) {
+function getCoverUrl(path, bucket = "games") {
   if (!path) return null;
-
-  return (
-    supabase.storage
-      .from("games")
-      .getPublicUrl(path)
-      .data?.publicUrl || null
-  );
+  return getR2ObjectUrl(bucket || "games", path);
 }
 
 function isPaidGame(game) {
@@ -261,6 +256,15 @@ export default function GamesSection() {
     setMessage("");
 
     try {
+      if (game.game_path) {
+        const signed = await getR2DownloadUrl({
+          bucket: game.game_bucket || "games",
+          path: game.game_path,
+        });
+        window.location.assign(signed.url);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke(
         "get-game-download",
         {
